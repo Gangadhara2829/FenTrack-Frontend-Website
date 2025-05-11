@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinTrack - Personal Finance Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f0f2f5; color: #333; }
+    header { background: #2f3640; padding: 20px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
+    header h1 { font-size: 24px; }
+    nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: 500; }
+    nav a:hover { text-decoration: underline; }
+    .hero { text-align: center; padding: 60px 20px; background: #40739e; color: white; }
+    .hero h2 { font-size: 36px; margin-bottom: 10px; }
+    .hero p { font-size: 18px; margin-bottom: 20px; }
+    .cta-button { padding: 10px 20px; background: #e1b12c; color: black; text-decoration: none; border-radius: 5px; font-weight: bold; }
+    section { padding: 40px 20px; max-width: 900px; margin: auto; }
+    #features ul { list-style: none; display: grid; gap: 10px; }
+    #features li { font-size: 18px; }
+    #features i { margin-right: 10px; color: #44bd32; }
+    #app { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+    input, select, button { width: 100%; padding: 10px; margin: 10px 0; }
+    ul#expense-list { list-style: none; padding: 0; }
+    ul#expense-list li { padding: 10px; background: #f5f6fa; margin-bottom: 5px; border-radius: 5px; cursor: pointer; }
+    canvas { margin-top: 30px; }
+    .profile-switcher { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .profile-switcher select, .profile-switcher input, .profile-switcher button { flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    .profile-switcher button { background: #40739e; color: white; cursor: pointer; }
+    .profile-switcher button:hover { background: #e1b12c; color: black; }
+
+    #splash {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      background-color: #2f3640;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+      z-index: 9999;
+      animation: fadeOut 1s ease-in-out forwards;
+      animation-delay: 2.5s;
+    }
+    .splash-logo {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      animation: bounce 2s infinite;
+    }
+    .loader {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #e1b12c;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    body.loaded #splash {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="splash">
+    <div class="splash-logo">FinTrack</div>
+    <div class="loader"></div>
+  </div>
+
+  <header>
+    <h1>FinTrack</h1>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#features">Features</a>
+      <a href="#about">About</a>
+      <a href="#app">Try App</a>
+    </nav>
+  </header>
+
+  <section id="home" class="hero">
+    <h2>Take Control of Your Finances</h2>
+    <p>Track every rupee with ease and clarity.</p>
+    <a href="#app" class="cta-button">Get Started</a>
+  </section>
+
+  <section id="features">
+    <h2>Features</h2>
+    <ul>
+      <li><i class="fas fa-check-circle"></i> Simple & Clean UI</li>
+      <li><i class="fas fa-check-circle"></i> Real-time Updates</li>
+      <li><i class="fas fa-check-circle"></i> Mobile Friendly</li>
+      <li><i class="fas fa-check-circle"></i> Save Locally</li>
+      <li><i class="fas fa-check-circle"></i> Pie Chart Visualization</li>
+      <li><i class="fas fa-check-circle"></i> Bar Chart by Category</li>
+      <li><i class="fas fa-check-circle"></i> Profile Switching</li>
+    </ul>
+  </section>
+
+  <section id="about">
+    <h2>About FinTrack</h2>
+    <p>FinTrack is a lightweight, easy-to-use personal finance tracker that helps you manage your expenses and keep track of your spending habits. It's built for students, freelancers, and anyone looking to improve their financial awareness.</p>
+  </section>
+
+  <section id="app">
+    <h2>Expense Tracker</h2>
+    <div class="profile-switcher">
+      <select id="profile-select"></select>
+      
+    </div>
+    <form id="expense-form">
+      <input type="text" id="desc" placeholder="Description" required />
+      <input type="number" id="amount" placeholder="Amount" required />
+      <select id="category">
+        <option value="Food">Food</option>
+        <option value="Transport">Transport</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Bills">Bills</option>
+        <option value="Other">Other</option>
+      </select>
+      <button type="submit">Add Expense</button>
+    </form>
+    <ul id="expense-list"></ul>
+    <h3>Total: ₹<span id="total">0</span></h3>
+    <canvas id="pieChart" width="400" height="400"></canvas>
+    <canvas id="barChart" width="400" height="400"></canvas>
+  </section>
+
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.body.classList.add('loaded');
+      }, 3000);
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('expense-form');
+      const list = document.getElementById('expense-list');
+      const totalDisplay = document.getElementById('total');
+      const pieCtx = document.getElementById('pieChart').getContext('2d');
+      const barCtx = document.getElementById('barChart').getContext('2d');
+      const profileSelect = document.getElementById('profile-select');
+
+      let currentProfile = 'default';
+      let expenses = [];
+      let pieChart, barChart;
+
+      function loadProfiles() {
+        const profiles = Object.keys(localStorage);
+        profileSelect.innerHTML = '';
+        profiles.forEach(profile => {
+          const opt = document.createElement('option');
+          opt.value = profile;
+          opt.textContent = profile;
+          profileSelect.appendChild(opt);
+        });
+        if (!profiles.includes(currentProfile)) {
+          currentProfile = profiles[0] || 'default';
+          if (!localStorage.getItem(currentProfile)) {
+            localStorage.setItem(currentProfile, JSON.stringify([]));
+          }
+        }
+        profileSelect.value = currentProfile;
+      }
+
+      profileSelect.addEventListener('change', () => {
+        currentProfile = profileSelect.value;
+        expenses = JSON.parse(localStorage.getItem(currentProfile)) || [];
+        renderExpenses();
+        updateTotal();
+        updateCharts();
+      });
+
+      function createProfile() {
+        const name = document.getElementById('new-profile-name').value.trim();
+        if (!name || localStorage.getItem(name)) return;
+        localStorage.setItem(name, JSON.stringify([]));
+        loadProfiles();
+        profileSelect.value = name;
+        profileSelect.dispatchEvent(new Event('change'));
+        document.getElementById('new-profile-name').value = '';
+      }
+
+      function updateTotal() {
+        const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+        totalDisplay.textContent = total;
+      }
+
+      function renderExpenses() {
+        list.innerHTML = '';
+        expenses.forEach((exp, index) => {
+          const li = document.createElement('li');
+          li.textContent = `${exp.desc} - ₹${exp.amount} [${exp.category}]`;
+          li.onclick = () => {
+            expenses.splice(index, 1);
+            localStorage.setItem(currentProfile, JSON.stringify(expenses));
+            renderExpenses();
+            updateTotal();
+            updateCharts();
+          };
+          list.appendChild(li);
+        });
+      }
+
+      function updateCharts() {
+        const categoryTotals = {};
+        expenses.forEach(exp => {
+          categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
+        });
+
+        const labels = Object.keys(categoryTotals);
+        const data = Object.values(categoryTotals);
+
+        if (pieChart) pieChart.destroy();
+        pieChart = new Chart(pieCtx, {
+          type: 'pie',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: data,
+              backgroundColor: ['#e84118', '#00a8ff', '#44bd32', '#fbc531', '#9c88ff', '#c23616'],
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } }
+          }
+        });
+
+        if (barChart) barChart.destroy();
+        barChart = new Chart(barCtx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Expenses by Category',
+              data: data,
+              backgroundColor: '#0097e6'
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const desc = document.getElementById('desc').value;
+        const amount = parseFloat(document.getElementById('amount').value);
+        const category = document.getElementById('category').value;
+        if (!desc || !amount) return;
+        expenses.push({ desc, amount, category });
+        localStorage.setItem(currentProfile, JSON.stringify(expenses));
+        renderExpenses();
+        updateTotal();
+        updateCharts();
+        form.reset();
+      });
+
+      loadProfiles();
+      expenses = JSON.parse(localStorage.getItem(currentProfile)) || [];
+      renderExpenses();
+      updateTotal();
+      updateCharts();
+    });
+  </script>
+</body>
+</html>
